@@ -1,33 +1,10 @@
 var rs = require('readline-sync')
 
-function promptUser(msg) {
-  return rs.question(msg)
+function promptUser (msg){
+  return rs.question(msg);
 }
-
-function testOperation(operation) {
-  if (operation.trim() === "+") {
-    return "add"
-  } else if (operation.trim() === "-") {
-    return "subtract"
-  } else if (operation.trim() === "*") {
-    return "multiply"
-  } else if (operation.trim() === "/") {
-    return "divide"
-  } else {
-    return ""
-  }
-}
-
-function testNum(numStr) {
-  if (Number(numStr) !== NaN) {
-    return Number(numStr)
-  } else {
-    return null
-  }
-}
-
 function add(num1, num2) {
-  return num1 + num2
+  return num1 + num2;
 }
 
 function subtract(num1, num2) {
@@ -42,53 +19,50 @@ function divide(num1, num2) {
   return num1 / num2
 }
 
-function main() {
-  let repeat = true
-  let operation = ''
-  let num1 = null;
-  let num2 = null;
+(function main() {
+// create variables
+  let repeat = true;
+  let regExTest = /(\d+(\.\d+)?\s?)[+\-\/*]{1}(\s?\d+(\.\d+)?)/;
+  let numberSplitter = /\d+(\.\d+)?/mg;
+  let userQuestion = '';
+  let numbers = [];
+  let operator = '';
+  let num1;
+  let num2;
 
+  //get the users question and test the question to make sure it is viable for the program.
   while (repeat) {
-    operation = testOperation(promptUser("What operation would you like to preform [+, -, *, /]? "));
-    if (operation) {
+    userQuestion = promptUser('What math problem should we solve? [ex.25 * 7]: ')
+    if(regExTest.test(userQuestion)) {
       repeat = false
     } else {
-      console.log("That is not an accepted operation. Try again.")
+      console.log(`We don't recognize that as a math problem. Try again.`)
+      userQuestion = ''
     }
   }
 
-  repeat = true
+  //collect the numbers from the question
+  numbers = userQuestion.match(numberSplitter);
+  //collect the operator from the question
+  operator = userQuestion.match(/[*+\-\/]/);
 
-  while (repeat) {
-    num1 = testNum(promptUser("Please enter the first number? "))
-    if (num1) {
-      repeat = false
-    } else {
-      console.log("That is not recognized as a number. Please try again.")
-    }
+  // Change number strings to actual numbers for the functions
+  num1 = Number(numbers[0]);
+  num2 = Number(numbers[1]);
+  
+  // Switch the function based on operator and reply the answer.
+  switch (operator[0]) {
+    case '+':
+      console.log(`The answer is ${add(num1, num2)}`);
+      break;
+    case '-':
+      console.log(`The answer is ${subtract(num1, num2)}`);
+      break;
+    case '*':
+      console.log(`The answer is ${multiply(num1, num2)}`);
+      break;
+    case '/':
+      console.log(`The answer is ${divide(num1, num2)}`);
+      break;
   }
-
-  repeat = true
-
-  while (repeat) {
-    num2 = testNum(promptUser("Please enter the second number? "))
-    if (num2) {
-      repeat = false
-    } else {
-      console.log("That is not recognized as a number. Please try again.")
-    }
-  }
-
-  if(operation === "add") {
-    console.log(`Your result is ${add(num1, num2).toFixed(2)}`)
-  } else if (operation === "subtract") {
-    console.log(`Your result is ${subtract(num1, num2).toFixed(2)}`)
-  } else if (operation === "multiply") {
-    console.log(`Your result is ${multiply(num1, num2).toFixed(2)}`)
-  } else if (operation === "divide") {
-    console.log(`Your result is ${divide(num1, num2).toFixed(2)}`)
-  }
-
-}
-
-main()
+})()
